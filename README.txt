@@ -4,7 +4,7 @@ An identity aggregator, built on top of Gitcoin Grants.
 
 Resources 
 - Live site - https://proofofpersonhood.com/
-- Smart Contract (NFT) - https://github.com/gitcoinco/NFTPOC/
+- Smart Contract (NFT) - https://github.com/gitcoinco/PersonhoodPassport
 - Gitcoin Trust Bonus tab - https://gitcoin.co/profile/trust
 
 Coming Soon
