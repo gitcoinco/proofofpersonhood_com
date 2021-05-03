@@ -43,7 +43,6 @@ async function get_personhoodscore(web3, network, address){
     let contract_address_rinkeby = '0xcEFBf0A9Ada7A03056dD08B470AA843ef8ca5D79'
     let contract_address_mainnet = '0xb4e903dc14dfe994fe291fc5b385c4718413366d'
     let contract_address = network == 'mainnet' ? contract_address_mainnet : contract_address_rinkeby;
-    console.log(contract_address);
 
     // get contract
     try{
