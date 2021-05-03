@@ -4,7 +4,30 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
+const ethEnabled = async () => {
+  if (window.ethereum) {
+    await window.ethereum.send('eth_requestAccounts');
+    window.web3 = new Web3(window.ethereum);
+    return true;
+  }
+  return false;
+}
+
+const checkPoPScore = async () => {
+	var ee = await ethEnabled();
+	if(!ee){
+		alert('please connect to web3 & try again');
+	} else {
+		var addr = await web3.eth.getCoinbase();
+		var pos_score = await get_personhoodscore(window.web3, 'mainnet', addr);
+		var msg = `Your personhodood score is ${pos_score}`
+		alert(msg);
+	}
+}
+
 (function($) {
+
+	$("#checkPoPScore").click(checkPoPScore);
 
 	var	$window = $(window),
 		$body = $('body'),
