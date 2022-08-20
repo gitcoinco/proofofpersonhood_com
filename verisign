@@ -1,0 +1,911 @@
+# Palkeoramix decompiler. 
+
+const unknown97aa096e = 0
+
+def storage:
+  owner is addr at storage 0
+  stor1 is mapping of uint8 at storage 1
+
+def owner(): # not payable
+  return owner
+
+#
+#  Regular functions
+#
+
+def isOwner(): # not payable
+  return (caller == owner)
+
+def renounceOwnership(): # not payable
+  require caller == owner
+  log OwnershipRenounced(address previousOwner=owner)
+  owner = 0
+
+def transferOwnership(address _newOwner): # not payable
+  require calldata.size - 4 >=ΓÇ▓ 32
+  require _newOwner == _newOwner
+  require caller == owner
+  require _newOwner
+  log OwnershipTransferred(
+        address previousOwner=owner,
+        address newOwner=_newOwner)
+  owner = _newOwner
+
+def unknown4b70212c(uint256 _param1): # not payable
+  require calldata.size - 4 >=ΓÇ▓ 32
+  require caller == owner
+  if _param1:
+      call caller with:
+         value _param1 wei
+           gas 2300 * is_zero(value) wei
+  else:
+      call caller with:
+         value eth.balance(this.address) wei
+           gas 2300 * is_zero(value) wei
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+
+def unknowne5d1e276(uint256 _param1, uint256 _param2): # not payable
+  require calldata.size - 4 >=ΓÇ▓ 64
+  require _param1 == addr(_param1)
+  require _param2 == addr(_param2)
+  require caller == owner
+  call addr(_param1).approve(address spender, uint256 tokens) with:
+       gas gas_remaining wei
+      args addr(_param2), -1
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require return_data.size >=ΓÇ▓ 32
+  require ext_call.return_data == bool(ext_call.return_data[0])
+
+def withdrawToken(address _token, uint256 _amount): # not payable
+  require calldata.size - 4 >=ΓÇ▓ 64
+  require _token == _token
+  require caller == owner
+  if _amount:
+      call _token.transfer(address to, uint256 tokens) with:
+           gas gas_remaining wei
+          args caller, _amount
+  else:
+      static call _token.balanceOf(address tokenOwner) with:
+              gas gas_remaining wei
+             args this.address
+      if not ext_call.success:
+          revert with ext_call.return_data[0 len return_data.size]
+      require return_data.size >=ΓÇ▓ 32
+      call _token.transfer(address to, uint256 tokens) with:
+           gas gas_remaining wei
+          args caller, ext_call.return_data[0]
+  if not ext_call.success:
+      revert with ext_call.return_data[0 len return_data.size]
+  require return_data.size >=ΓÇ▓ 32
+  require ext_call.return_data == bool(ext_call.return_data[0])
+
+def unknown95585957(): # not payable
+  require calldata.size - 4 >=ΓÇ▓ 96
+  require cd <= 18446744073709551615
+  require cd <ΓÇ▓ calldata.size
+  if ('cd', 36).length > 18446744073709551615:
+      revert with 0, 65
+  if ceil32(32 * ('cd', 36).length) + 97 > 18446744073709551615 or ceil32(32 * ('cd', 36).length) + 97 < 96:
+      revert with 0, 65
+  mem[96] = ('cd', 36).length
+  require (32 * ('cd', 36).length) + cd <= calldata.size
+  idx = cd[36] + 36
+  s = 128
+  while idx < (32 * ('cd', 36).length) + cd:
+      require cd[idx] == addr(cd[idx])
+      mem[s] = cd[idx]
+      idx = idx + 32
+      s = s + 32
+      continue 
+  require cd <= 18446744073709551615
+  require cd <ΓÇ▓ calldata.size
+  if ('cd', 68).length > 18446744073709551615:
+      revert with 0, 65
+  if ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 98 > 18446744073709551615 or ceil32(32 * ('cd', 68).length) + 98 < 97:
+      revert with 0, 65
+  mem[64] = ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 98
+  mem[ceil32(32 * ('cd', 36).length) + 97] = ('cd', 68).length
+  require (32 * ('cd', 68).length) + cd <= calldata.size
+  idx = cd[68] + 36
+  s = ceil32(32 * ('cd', 36).length) + 129
+  while idx < (32 * ('cd', 68).length) + cd:
+      require cd[idx] == addr(cd[idx])
+      mem[s] = cd[idx]
+      idx = idx + 32
+      s = s + 32
+      continue 
+  idx = 0
+  s = cd[4]
+  while idx < ('cd', 68).length:
+      if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+          revert with 0, 50
+      _46 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+      if idx >= mem[96]:
+          revert with 0, 50
+      _49 = mem[(32 * idx) + 128]
+      if 1 > !idx:
+          revert with 0, 17
+      if idx + 1 >= mem[96]:
+          revert with 0, 50
+      _51 = mem[(32 * idx + 1) + 128]
+      mem[mem[64] + 4] = s
+      mem[mem[64] + 36] = addr(_49)
+      mem[mem[64] + 68] = addr(_51)
+      static call addr(_46).0x90a27e5c with:
+              gas gas_remaining wei
+             args s, addr(_49), addr(_51)
+      mem[mem[64]] = ext_call.return_data[0]
+      if not ext_call.success:
+          revert with ext_call.return_data[0 len return_data.size]
+      _54 = mem[64]
+      mem[64] = mem[64] + ceil32(return_data.size)
+      require return_data.size >=ΓÇ▓ 32
+      if idx == -1:
+          revert with 0, 17
+      idx = idx + 1
+      s = mem[_54]
+      continue 
+  return (cd < cd * ('cd', 68).length))
+
+def unknownb57212a4(): # not payable
+  require calldata.size - 4 >=ΓÇ▓ 96
+  require cd <= 18446744073709551615
+  require cd <ΓÇ▓ calldata.size
+  if ('cd', 36).length > 18446744073709551615:
+      revert with 0, 65
+  if ceil32(32 * ('cd', 36).length) + 97 > 18446744073709551615 or ceil32(32 * ('cd', 36).length) + 97 < 96:
+      revert with 0, 65
+  mem[96] = ('cd', 36).length
+  require (32 * ('cd', 36).length) + cd <= calldata.size
+  idx = cd[36] + 36
+  s = 128
+  while idx < (32 * ('cd', 36).length) + cd:
+      require cd[idx] == addr(cd[idx])
+      mem[s] = cd[idx]
+      idx = idx + 32
+      s = s + 32
+      continue 
+  require cd <= 18446744073709551615
+  require cd <ΓÇ▓ calldata.size
+  if ('cd', 68).length > 18446744073709551615:
+      revert with 0, 65
+  if ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 98 > 18446744073709551615 or ceil32(32 * ('cd', 68).length) + 98 < 97:
+      revert with 0, 65
+  mem[64] = ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 98
+  mem[ceil32(32 * ('cd', 36).length) + 97] = ('cd', 68).length
+  require (32 * ('cd', 68).length) + cd <= calldata.size
+  idx = cd[68] + 36
+  s = ceil32(32 * ('cd', 36).length) + 129
+  while idx < (32 * ('cd', 68).length) + cd:
+      require cd[idx] == addr(cd[idx])
+      mem[s] = cd[idx]
+      idx = idx + 32
+      s = s + 32
+      continue 
+  idx = 0
+  s = cd[4]
+  while idx < ('cd', 68).length:
+      if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+          revert with 0, 50
+      _366 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+      if idx >= mem[96]:
+          revert with 0, 50
+      _369 = mem[(32 * idx) + 128]
+      if 1 > !idx:
+          revert with 0, 17
+      if idx + 1 >= mem[96]:
+          revert with 0, 50
+      _377 = mem[(32 * idx + 1) + 128]
+      mem[mem[64] + 4] = s
+      mem[mem[64] + 36] = addr(_369)
+      mem[mem[64] + 68] = addr(_377)
+      static call addr(_366).0x90a27e5c with:
+              gas gas_remaining wei
+             args s, addr(_369), addr(_377)
+      mem[mem[64]] = ext_call.return_data[0]
+      if not ext_call.success:
+          revert with ext_call.return_data[0 len return_data.size]
+      _390 = mem[64]
+      mem[64] = mem[64] + ceil32(return_data.size)
+      require return_data.size >=ΓÇ▓ 32
+      if idx == -1:
+          revert with 0, 17
+      idx = idx + 1
+      s = mem[_390]
+      continue 
+  if cd >= cd * ('cd', 68).length):
+      revert with 0, 'estimate failed'
+  _484 = mem[ceil32(32 * ('cd', 36).length) + 97]
+  idx = 0
+  s = cd[4]
+  while idx < _484:
+      if idx >= mem[96]:
+          revert with 0, 50
+      if not mem[(32 * idx) + 140 len 20]:
+          if idx >= mem[96]:
+              revert with 0, 50
+          if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+              revert with 0, 50
+          if mem[(32 * idx) + 140 len 20]:
+              _505 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+              if idx >= mem[96]:
+                  revert with 0, 50
+              _511 = mem[(32 * idx) + 128]
+              if 1 > !idx:
+                  revert with 0, 17
+              if idx + 1 >= mem[96]:
+                  revert with 0, 50
+              _535 = mem[(32 * idx + 1) + 128]
+              mem[mem[64] + 4] = s
+              mem[mem[64] + 36] = addr(_511)
+              mem[mem[64] + 68] = addr(_535)
+              call addr(_505).0x2b7f0923 with:
+                   gas gas_remaining wei
+                  args s, addr(_511), addr(_535)
+              mem[mem[64]] = ext_call.return_data[0]
+              if not ext_call.success:
+                  revert with ext_call.return_data[0 len return_data.size]
+              _546 = mem[64]
+              mem[64] = mem[64] + ceil32(return_data.size)
+              require return_data.size >=ΓÇ▓ 32
+              if idx == -1:
+                  revert with 0, 17
+              _484 = mem[ceil32(32 * ('cd', 36).length) + 97]
+              idx = idx + 1
+              s = mem[_546]
+              continue 
+          _507 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+          if idx >= mem[96]:
+              revert with 0, 50
+          _512 = mem[(32 * idx) + 128]
+          if 1 > !idx:
+              revert with 0, 17
+          if idx + 1 >= mem[96]:
+              revert with 0, 50
+          _537 = mem[(32 * idx + 1) + 128]
+          mem[mem[64] + 4] = s
+          mem[mem[64] + 36] = addr(_512)
+          mem[mem[64] + 68] = addr(_537)
+          call addr(_507).0x2b7f0923 with:
+             value s wei
+               gas gas_remaining wei
+              args s, addr(_512), addr(_537)
+          mem[mem[64]] = ext_call.return_data[0]
+          if not ext_call.success:
+              revert with ext_call.return_data[0 len return_data.size]
+          _547 = mem[64]
+          mem[64] = mem[64] + ceil32(return_data.size)
+          require return_data.size >=ΓÇ▓ 32
+          if idx == -1:
+              revert with 0, 17
+          _484 = mem[ceil32(32 * ('cd', 36).length) + 97]
+          idx = idx + 1
+          s = mem[_547]
+          continue 
+      if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+          revert with 0, 50
+      if idx >= mem[96]:
+          revert with 0, 50
+      mem[0] = mem[(32 * idx) + 140 len 20]
+      mem[32] = sha3(mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 141 len 20], 1)
+      if idx >= mem[96]:
+          revert with 0, 50
+      if stor1[mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 141 len 20]][mem[(32 * idx) + 140 len 20]]:
+          if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+              revert with 0, 50
+          if mem[(32 * idx) + 140 len 20]:
+              _523 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+              if idx >= mem[96]:
+                  revert with 0, 50
+              _531 = mem[(32 * idx) + 128]
+              if 1 > !idx:
+                  revert with 0, 17
+              if idx + 1 >= mem[96]:
+                  revert with 0, 50
+              _551 = mem[(32 * idx + 1) + 128]
+              mem[mem[64] + 4] = s
+              mem[mem[64] + 36] = addr(_531)
+              mem[mem[64] + 68] = addr(_551)
+              call addr(_523).0x2b7f0923 with:
+                   gas gas_remaining wei
+                  args s, addr(_531), addr(_551)
+              mem[mem[64]] = ext_call.return_data[0]
+              if not ext_call.success:
+                  revert with ext_call.return_data[0 len return_data.size]
+              _563 = mem[64]
+              mem[64] = mem[64] + ceil32(return_data.size)
+              require return_data.size >=ΓÇ▓ 32
+              if idx == -1:
+                  revert with 0, 17
+              _484 = mem[ceil32(32 * ('cd', 36).length) + 97]
+              idx = idx + 1
+              s = mem[_563]
+              continue 
+          _525 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+          if idx >= mem[96]:
+              revert with 0, 50
+          _532 = mem[(32 * idx) + 128]
+          if 1 > !idx:
+              revert with 0, 17
+          if idx + 1 >= mem[96]:
+              revert with 0, 50
+          _553 = mem[(32 * idx + 1) + 128]
+          mem[mem[64] + 4] = s
+          mem[mem[64] + 36] = addr(_532)
+          mem[mem[64] + 68] = addr(_553)
+          call addr(_525).0x2b7f0923 with:
+             value s wei
+               gas gas_remaining wei
+              args s, addr(_532), addr(_553)
+          mem[mem[64]] = ext_call.return_data[0]
+          if not ext_call.success:
+              revert with ext_call.return_data[0 len return_data.size]
+          _564 = mem[64]
+          mem[64] = mem[64] + ceil32(return_data.size)
+          require return_data.size >=ΓÇ▓ 32
+          if idx == -1:
+              revert with 0, 17
+          _484 = mem[ceil32(32 * ('cd', 36).length) + 97]
+          idx = idx + 1
+          s = mem[_564]
+          continue 
+      _514 = mem[(32 * idx) + 128]
+      if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+          revert with 0, 50
+      mem[mem[64] + 4] = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 141 len 20]
+      mem[mem[64] + 36] = -1
+      call addr(_514).approve(address spender, uint256 tokens) with:
+           gas gas_remaining wei
+          args mem[mem[64] + 4], -1
+      mem[mem[64]] = ext_call.return_data[0]
+      if not ext_call.success:
+          revert with ext_call.return_data[0 len return_data.size]
+      _533 = mem[64]
+      mem[64] = mem[64] + ceil32(return_data.size)
+      require return_data.size >=ΓÇ▓ 32
+      require mem[_533] == bool(mem[_533])
+      if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+          revert with 0, 50
+      if idx >= mem[96]:
+          revert with 0, 50
+      mem[0] = mem[(32 * idx) + 140 len 20]
+      mem[32] = sha3(mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 141 len 20], 1)
+      stor1[mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 141 len 20]][mem[(32 * idx) + 140 len 20]] = 1
+      if idx >= mem[96]:
+          revert with 0, 50
+      if idx >= mem[ceil32(32 * ('cd', 36).length) + 97]:
+          revert with 0, 50
+      if mem[(32 * idx) + 140 len 20]:
+          _573 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+          if idx >= mem[96]:
+              revert with 0, 50
+          _577 = mem[(32 * idx) + 128]
+          if 1 > !idx:
+              revert with 0, 17
+          if idx + 1 >= mem[96]:
+              revert with 0, 50
+          _581 = mem[(32 * idx + 1) + 128]
+          mem[mem[64] + 4] = s
+          mem[mem[64] + 36] = addr(_577)
+          mem[mem[64] + 68] = addr(_581)
+          call addr(_573).0x2b7f0923 with:
+               gas gas_remaining wei
+              args s, addr(_577), addr(_581)
+          mem[mem[64]] = ext_call.return_data[0]
+          if not ext_call.success:
+              revert with ext_call.return_data[0 len return_data.size]
+          _587 = mem[64]
+          mem[64] = mem[64] + ceil32(return_data.size)
+          require return_data.size >=ΓÇ▓ 32
+          if idx == -1:
+              revert with 0, 17
+          _484 = mem[ceil32(32 * ('cd', 36).length) + 97]
+          idx = idx + 1
+          s = mem[_587]
+          continue 
+      _575 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 129]
+      if idx >= mem[96]:
+          revert with 0, 50
+      _578 = mem[(32 * idx) + 128]
+      if 1 > !idx:
+          revert with 0, 17
+      if idx + 1 >= mem[96]:
+          revert with 0, 50
+      _583 = mem[(32 * idx + 1) + 128]
+      mem[mem[64] + 4] = s
+      mem[mem[64] + 36] = addr(_578)
+      mem[mem[64] + 68] = addr(_583)
+      call addr(_575).0x2b7f0923 with:
+         value s wei
+           gas gas_remaining wei
+          args s, addr(_578), addr(_583)
+      mem[mem[64]] = ext_call.return_data[0]
+      if not ext_call.success:
+          revert with ext_call.return_data[0 len return_data.size]
+      _588 = mem[64]
+      mem[64] = mem[64] + ceil32(return_data.size)
+      require return_data.size >=ΓÇ▓ 32
+      if idx == -1:
+          revert with 0, 17
+      _484 = mem[ceil32(32 * ('cd', 36).length) + 97]
+      idx = idx + 1
+      s = mem[_588]
+      continue 
+  if 1 > !mem[ceil32(32 * ('cd', 36).length) + 97]:
+      revert with 0, 17
+  if mem[96] != mem[ceil32(32 * ('cd', 36).length) + 97] + 1:
+      revert with 0, 'token addr and dexIdxs count is not match'
+  if mem[96] <= 2:
+      revert with 0, 'token address require more than 2 '
+  if mem[96] < 1:
+      revert with 0, 17
+  if mem[96] - 1 >= mem[96]:
+      revert with 0, 50
+  if 0 >= mem[96]:
+      revert with 0, 50
+  if mem[140 len 20] != mem[(32 * mem[96] - 1) + 140 len 20]:
+      revert with 0, 'token address must be same'
+  if s <= cd[4]:
+      revert with 0, 'insufficient amount out...'
+  if eth.balance(this.address) <= eth.balance(this.address):
+      revert with 0, 'naBBeun nom'
+
+def _fallback() payable: # default function
+  if calldata.size < 4:
+      require not calldata.size
+  else:
+      if 2544503150 > uint32(call.func_hash) >> 224:
+          if 1265639724 == uint32(call.func_hash) >> 224:
+              require not call.value
+              require calldata.size - 4 >=ΓÇ▓ 32
+              require caller == owner
+              if cd[4]:
+                  call caller with:
+                     value cdwei
+                       gas 2300 * is_zero(value) wei
+              else:
+                  call caller with:
+                     value eth.balance(this.address) wei
+                       gas 2300 * is_zero(value) wei
+              if not ext_call.success:
+                  revert with ext_call.return_data[0 len return_data.size]
+              stop
+          if renounceOwnership() == uint32(call.func_hash) >> 224:
+              require not call.value
+              require caller == owner
+              log OwnershipRenounced(address previousOwner=owner)
+              owner = 0
+              stop
+          if owner() == uint32(call.func_hash) >> 224:
+              require not call.value
+              return owner
+          if isOwner() == uint32(call.func_hash) >> 224:
+              require not call.value
+              return (caller == owner)
+          require 2505595223 == uint32(call.func_hash) >> 224
+          require not call.value
+          require calldata.size - 4 >=ΓÇ▓ 96
+          require cd <= 18446744073709551615
+          require cd <ΓÇ▓ calldata.size
+          if ('cd', 36).length > 18446744073709551615:
+              revert with 0, 65
+          if ceil32(32 * ('cd', 36).length) + 129 > 18446744073709551615 or ceil32(32 * ('cd', 36).length) + 129 < 128:
+              revert with 0, 65
+          mem[128] = ('cd', 36).length
+          require (32 * ('cd', 36).length) + cd <= calldata.size
+          idx = cd[36] + 36
+          s = 160
+          while idx < (32 * ('cd', 36).length) + cd:
+              require cd[idx] == addr(cd[idx])
+              mem[s] = cd[idx]
+              idx = idx + 32
+              s = s + 32
+              continue 
+          require cd <= 18446744073709551615
+          require cd <ΓÇ▓ calldata.size
+          if ('cd', 68).length > 18446744073709551615:
+              revert with 0, 65
+          if ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 130 > 18446744073709551615 or ceil32(32 * ('cd', 68).length) + 130 < 129:
+              revert with 0, 65
+          mem[64] = ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 130
+          mem[ceil32(32 * ('cd', 36).length) + 129] = ('cd', 68).length
+          require (32 * ('cd', 68).length) + cd <= calldata.size
+          idx = cd[68] + 36
+          s = ceil32(32 * ('cd', 36).length) + 161
+          while idx < (32 * ('cd', 68).length) + cd:
+              require cd[idx] == addr(cd[idx])
+              mem[s] = cd[idx]
+              idx = idx + 32
+              s = s + 32
+              continue 
+          idx = 0
+          s = cd[4]
+          while idx < ('cd', 68).length:
+              if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                  revert with 0, 50
+              _437 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+              if idx >= mem[128]:
+                  revert with 0, 50
+              _442 = mem[(32 * idx) + 160]
+              if 1 > !idx:
+                  revert with 0, 17
+              if idx + 1 >= mem[128]:
+                  revert with 0, 50
+              _452 = mem[(32 * idx + 1) + 160]
+              mem[mem[64] + 4] = s
+              mem[mem[64] + 36] = addr(_442)
+              mem[mem[64] + 68] = addr(_452)
+              static call addr(_437).0x90a27e5c with:
+                      gas gas_remaining wei
+                     args s, addr(_442), addr(_452)
+              mem[mem[64]] = ext_call.return_data[0]
+              if not ext_call.success:
+                  revert with ext_call.return_data[0 len return_data.size]
+              _464 = mem[64]
+              mem[64] = mem[64] + ceil32(return_data.size)
+              require return_data.size >=ΓÇ▓ 32
+              if idx == -1:
+                  revert with 0, 17
+              idx = idx + 1
+              s = mem[_464]
+              continue 
+          return (cd < cd * ('cd', 68).length))
+      if 2544503150 == uint32(call.func_hash) >> 224:
+          require not call.value
+          return 0
+      if withdrawToken(address account, uint256 amount) == uint32(call.func_hash) >> 224:
+          require not call.value
+          require calldata.size - 4 >=ΓÇ▓ 64
+          require cd == addr(cd)
+          require caller == owner
+          if cd[36]:
+              call addr(cd).transfer(address to, uint256 tokens) with:
+                   gas gas_remaining wei
+                  args caller, cd[36]
+          else:
+              static call addr(cd).balanceOf(address tokenOwner) with:
+                      gas gas_remaining wei
+                     args this.address
+              if not ext_call.success:
+                  revert with ext_call.return_data[0 len return_data.size]
+              require return_data.size >=ΓÇ▓ 32
+              call addr(cd).transfer(address to, uint256 tokens) with:
+                   gas gas_remaining wei
+                  args caller, ext_call.return_data[0]
+          if not ext_call.success:
+              revert with ext_call.return_data[0 len return_data.size]
+          require return_data.size >=ΓÇ▓ 32
+          require ext_call.return_data == bool(ext_call.return_data[0])
+      else:
+          if uint32(call.func_hash) >> 224 != 3044151972:
+              if uint32(call.func_hash) >> 224 != 3855737462:
+                  require transferOwnership(address newOwner) == uint32(call.func_hash) >> 224
+                  require not call.value
+                  require calldata.size - 4 >=ΓÇ▓ 32
+                  require cd == addr(cd)
+                  require caller == owner
+                  require addr(cd)
+                  log OwnershipTransferred(
+                        address previousOwner=owner,
+                        address newOwner=addr(cd
+                  owner = addr(cd)
+              else:
+                  require not call.value
+                  require calldata.size - 4 >=ΓÇ▓ 64
+                  require cd == addr(cd)
+                  require cd == addr(cd)
+                  require caller == owner
+                  call addr(cd).approve(address spender, uint256 tokens) with:
+                       gas gas_remaining wei
+                      args addr(cd), -1
+                  if not ext_call.success:
+                      revert with ext_call.return_data[0 len return_data.size]
+                  require return_data.size >=ΓÇ▓ 32
+                  require ext_call.return_data == bool(ext_call.return_data[0])
+          else:
+              require not call.value
+              require calldata.size - 4 >=ΓÇ▓ 96
+              require cd <= 18446744073709551615
+              require cd <ΓÇ▓ calldata.size
+              if ('cd', 36).length > 18446744073709551615:
+                  revert with 0, 65
+              if ceil32(32 * ('cd', 36).length) + 129 > 18446744073709551615 or ceil32(32 * ('cd', 36).length) + 129 < 128:
+                  revert with 0, 65
+              mem[128] = ('cd', 36).length
+              require (32 * ('cd', 36).length) + cd <= calldata.size
+              idx = cd[36] + 36
+              s = 160
+              while idx < (32 * ('cd', 36).length) + cd:
+                  require cd[idx] == addr(cd[idx])
+                  mem[s] = cd[idx]
+                  idx = idx + 32
+                  s = s + 32
+                  continue 
+              require cd <= 18446744073709551615
+              require cd <ΓÇ▓ calldata.size
+              if ('cd', 68).length > 18446744073709551615:
+                  revert with 0, 65
+              if ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 130 > 18446744073709551615 or ceil32(32 * ('cd', 68).length) + 130 < 129:
+                  revert with 0, 65
+              mem[64] = ceil32(32 * ('cd', 36).length) + ceil32(32 * ('cd', 68).length) + 130
+              mem[ceil32(32 * ('cd', 36).length) + 129] = ('cd', 68).length
+              require (32 * ('cd', 68).length) + cd <= calldata.size
+              idx = cd[68] + 36
+              s = ceil32(32 * ('cd', 36).length) + 161
+              while idx < (32 * ('cd', 68).length) + cd:
+                  require cd[idx] == addr(cd[idx])
+                  mem[s] = cd[idx]
+                  idx = idx + 32
+                  s = s + 32
+                  continue 
+              idx = 0
+              s = cd[4]
+              while idx < ('cd', 68).length:
+                  if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                      revert with 0, 50
+                  _439 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+                  if idx >= mem[128]:
+                      revert with 0, 50
+                  _444 = mem[(32 * idx) + 160]
+                  if 1 > !idx:
+                      revert with 0, 17
+                  if idx + 1 >= mem[128]:
+                      revert with 0, 50
+                  _455 = mem[(32 * idx + 1) + 160]
+                  mem[mem[64] + 4] = s
+                  mem[mem[64] + 36] = addr(_444)
+                  mem[mem[64] + 68] = addr(_455)
+                  static call addr(_439).0x90a27e5c with:
+                          gas gas_remaining wei
+                         args s, addr(_444), addr(_455)
+                  mem[mem[64]] = ext_call.return_data[0]
+                  if not ext_call.success:
+                      revert with ext_call.return_data[0 len return_data.size]
+                  _470 = mem[64]
+                  mem[64] = mem[64] + ceil32(return_data.size)
+                  require return_data.size >=ΓÇ▓ 32
+                  if idx == -1:
+                      revert with 0, 17
+                  idx = idx + 1
+                  s = mem[_470]
+                  continue 
+              if cd >= cd * ('cd', 68).length):
+                  revert with 0, 'estimate failed'
+              _565 = mem[ceil32(32 * ('cd', 36).length) + 129]
+              idx = 0
+              s = cd[4]
+              while idx < _565:
+                  if idx >= mem[128]:
+                      revert with 0, 50
+                  if not mem[(32 * idx) + 172 len 20]:
+                      if idx >= mem[128]:
+                          revert with 0, 50
+                      if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                          revert with 0, 50
+                      if mem[(32 * idx) + 172 len 20]:
+                          _586 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+                          if idx >= mem[128]:
+                              revert with 0, 50
+                          _592 = mem[(32 * idx) + 160]
+                          if 1 > !idx:
+                              revert with 0, 17
+                          if idx + 1 >= mem[128]:
+                              revert with 0, 50
+                          _616 = mem[(32 * idx + 1) + 160]
+                          mem[mem[64] + 4] = s
+                          mem[mem[64] + 36] = addr(_592)
+                          mem[mem[64] + 68] = addr(_616)
+                          call addr(_586).0x2b7f0923 with:
+                               gas gas_remaining wei
+                              args s, addr(_592), addr(_616)
+                          mem[mem[64]] = ext_call.return_data[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          _627 = mem[64]
+                          mem[64] = mem[64] + ceil32(return_data.size)
+                          require return_data.size >=ΓÇ▓ 32
+                          if idx == -1:
+                              revert with 0, 17
+                          _565 = mem[ceil32(32 * ('cd', 36).length) + 129]
+                          idx = idx + 1
+                          s = mem[_627]
+                          continue 
+                      _588 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+                      if idx >= mem[128]:
+                          revert with 0, 50
+                      _593 = mem[(32 * idx) + 160]
+                      if 1 > !idx:
+                          revert with 0, 17
+                      if idx + 1 >= mem[128]:
+                          revert with 0, 50
+                      _618 = mem[(32 * idx + 1) + 160]
+                      mem[mem[64] + 4] = s
+                      mem[mem[64] + 36] = addr(_593)
+                      mem[mem[64] + 68] = addr(_618)
+                      call addr(_588).0x2b7f0923 with:
+                         value s wei
+                           gas gas_remaining wei
+                          args s, addr(_593), addr(_618)
+                      mem[mem[64]] = ext_call.return_data[0]
+                      if not ext_call.success:
+                          revert with ext_call.return_data[0 len return_data.size]
+                      _628 = mem[64]
+                      mem[64] = mem[64] + ceil32(return_data.size)
+                      require return_data.size >=ΓÇ▓ 32
+                      if idx == -1:
+                          revert with 0, 17
+                      _565 = mem[ceil32(32 * ('cd', 36).length) + 129]
+                      idx = idx + 1
+                      s = mem[_628]
+                      continue 
+                  if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                      revert with 0, 50
+                  if idx >= mem[128]:
+                      revert with 0, 50
+                  mem[0] = mem[(32 * idx) + 172 len 20]
+                  mem[32] = sha3(mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 173 len 20], 1)
+                  if idx >= mem[128]:
+                      revert with 0, 50
+                  if stor1[mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 173 len 20]][mem[(32 * idx) + 172 len 20]]:
+                      if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                          revert with 0, 50
+                      if mem[(32 * idx) + 172 len 20]:
+                          _604 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+                          if idx >= mem[128]:
+                              revert with 0, 50
+                          _612 = mem[(32 * idx) + 160]
+                          if 1 > !idx:
+                              revert with 0, 17
+                          if idx + 1 >= mem[128]:
+                              revert with 0, 50
+                          _632 = mem[(32 * idx + 1) + 160]
+                          mem[mem[64] + 4] = s
+                          mem[mem[64] + 36] = addr(_612)
+                          mem[mem[64] + 68] = addr(_632)
+                          call addr(_604).0x2b7f0923 with:
+                               gas gas_remaining wei
+                              args s, addr(_612), addr(_632)
+                          mem[mem[64]] = ext_call.return_data[0]
+                          if not ext_call.success:
+                              revert with ext_call.return_data[0 len return_data.size]
+                          _644 = mem[64]
+                          mem[64] = mem[64] + ceil32(return_data.size)
+                          require return_data.size >=ΓÇ▓ 32
+                          if idx == -1:
+                              revert with 0, 17
+                          _565 = mem[ceil32(32 * ('cd', 36).length) + 129]
+                          idx = idx + 1
+                          s = mem[_644]
+                          continue 
+                      _606 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+                      if idx >= mem[128]:
+                          revert with 0, 50
+                      _613 = mem[(32 * idx) + 160]
+                      if 1 > !idx:
+                          revert with 0, 17
+                      if idx + 1 >= mem[128]:
+                          revert with 0, 50
+                      _634 = mem[(32 * idx + 1) + 160]
+                      mem[mem[64] + 4] = s
+                      mem[mem[64] + 36] = addr(_613)
+                      mem[mem[64] + 68] = addr(_634)
+                      call addr(_606).0x2b7f0923 with:
+                         value s wei
+                           gas gas_remaining wei
+                          args s, addr(_613), addr(_634)
+                      mem[mem[64]] = ext_call.return_data[0]
+                      if not ext_call.success:
+                          revert with ext_call.return_data[0 len return_data.size]
+                      _645 = mem[64]
+                      mem[64] = mem[64] + ceil32(return_data.size)
+                      require return_data.size >=ΓÇ▓ 32
+                      if idx == -1:
+                          revert with 0, 17
+                      _565 = mem[ceil32(32 * ('cd', 36).length) + 129]
+                      idx = idx + 1
+                      s = mem[_645]
+                      continue 
+                  _595 = mem[(32 * idx) + 160]
+                  if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                      revert with 0, 50
+                  mem[mem[64] + 4] = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 173 len 20]
+                  mem[mem[64] + 36] = -1
+                  call addr(_595).approve(address spender, uint256 tokens) with:
+                       gas gas_remaining wei
+                      args mem[mem[64] + 4], -1
+                  mem[mem[64]] = ext_call.return_data[0]
+                  if not ext_call.success:
+                      revert with ext_call.return_data[0 len return_data.size]
+                  _614 = mem[64]
+                  mem[64] = mem[64] + ceil32(return_data.size)
+                  require return_data.size >=ΓÇ▓ 32
+                  require mem[_614] == bool(mem[_614])
+                  if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                      revert with 0, 50
+                  if idx >= mem[128]:
+                      revert with 0, 50
+                  mem[0] = mem[(32 * idx) + 172 len 20]
+                  mem[32] = sha3(mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 173 len 20], 1)
+                  stor1[mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 173 len 20]][mem[(32 * idx) + 172 len 20]] = 1
+                  if idx >= mem[128]:
+                      revert with 0, 50
+                  if idx >= mem[ceil32(32 * ('cd', 36).length) + 129]:
+                      revert with 0, 50
+                  if mem[(32 * idx) + 172 len 20]:
+                      _654 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+                      if idx >= mem[128]:
+                          revert with 0, 50
+                      _658 = mem[(32 * idx) + 160]
+                      if 1 > !idx:
+                          revert with 0, 17
+                      if idx + 1 >= mem[128]:
+                          revert with 0, 50
+                      _662 = mem[(32 * idx + 1) + 160]
+                      mem[mem[64] + 4] = s
+                      mem[mem[64] + 36] = addr(_658)
+                      mem[mem[64] + 68] = addr(_662)
+                      call addr(_654).0x2b7f0923 with:
+                           gas gas_remaining wei
+                          args s, addr(_658), addr(_662)
+                      mem[mem[64]] = ext_call.return_data[0]
+                      if not ext_call.success:
+                          revert with ext_call.return_data[0 len return_data.size]
+                      _668 = mem[64]
+                      mem[64] = mem[64] + ceil32(return_data.size)
+                      require return_data.size >=ΓÇ▓ 32
+                      if idx == -1:
+                          revert with 0, 17
+                      _565 = mem[ceil32(32 * ('cd', 36).length) + 129]
+                      idx = idx + 1
+                      s = mem[_668]
+                      continue 
+                  _656 = mem[(32 * idx) + ceil32(32 * ('cd', 36).length) + 161]
+                  if idx >= mem[128]:
+                      revert with 0, 50
+                  _659 = mem[(32 * idx) + 160]
+                  if 1 > !idx:
+                      revert with 0, 17
+                  if idx + 1 >= mem[128]:
+                      revert with 0, 50
+                  _664 = mem[(32 * idx + 1) + 160]
+                  mem[mem[64] + 4] = s
+                  mem[mem[64] + 36] = addr(_659)
+                  mem[mem[64] + 68] = addr(_664)
+                  call addr(_656).0x2b7f0923 with:
+                     value s wei
+                       gas gas_remaining wei
+                      args s, addr(_659), addr(_664)
+                  mem[mem[64]] = ext_call.return_data[0]
+                  if not ext_call.success:
+                      revert with ext_call.return_data[0 len return_data.size]
+                  _669 = mem[64]
+                  mem[64] = mem[64] + ceil32(return_data.size)
+                  require return_data.size >=ΓÇ▓ 32
+                  if idx == -1:
+                      revert with 0, 17
+                  _565 = mem[ceil32(32 * ('cd', 36).length) + 129]
+                  idx = idx + 1
+                  s = mem[_669]
+                  continue 
+              if 1 > !mem[ceil32(32 * ('cd', 36).length) + 129]:
+                  revert with 0, 17
+              if mem[128] != mem[ceil32(32 * ('cd', 36).length) + 129] + 1:
+                  revert with 0, 'token addr and dexIdxs count is not match'
+              if mem[128] <= 2:
+                  revert with 0, 'token address require more than 2 '
+              if mem[128] < 1:
+                  revert with 0, 17
+              if mem[128] - 1 >= mem[128]:
+                  revert with 0, 50
+              if 0 >= mem[128]:
+                  revert with 0, 50
+              if mem[172 len 20] != mem[(32 * mem[128] - 1) + 172 len 20]:
+                  revert with 0, 'token address must be same'
+              if s <= cd[4]:
+                  revert with 0, 'insufficient amount out...'
+              if eth.balance(this.address) <= eth.balance(this.address):
+                  revert with 0, 'naBBeun nom'
+
+
